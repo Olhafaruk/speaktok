@@ -1,6 +1,8 @@
 # SpeakTok
-Foreign Language Dialog Trainer App  
-**English | [Українська](#українська)**
+Foreign Language Dialog Trainer App
+
+[![English](https://img.shields.io/badge/🇬🇧-English-blue)](#english)
+[![Українська](https://img.shields.io/badge/🇺🇦-Українська-yellow)](#українська)
 
 ---
 
@@ -78,6 +80,4 @@ Full license text is available in the `LICENSE` file.
 - Бібліотека фраз
 - Аудіопідтримка
 - Експорт/імпорт прогресу
-- Публікація в Google Play
-
----
+- Публікація в Google Play  
