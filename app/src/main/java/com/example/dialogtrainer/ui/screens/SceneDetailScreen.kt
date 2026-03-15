@@ -6,26 +6,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.example.dialogtrainer.ui.iconForRole
-
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.dialogtrainer.data.model.Role
 import com.example.dialogtrainer.data.repository.SceneRepository
-
-
+import com.example.dialogtrainer.ui.iconForRole
 
 @Composable
-fun SceneDetailScreen(navController: NavController, sceneId: Int) {
+fun SceneDetailScreen(sceneId: String) {
     val repository = SceneRepository()
-    val scene = repository.getScenes().firstOrNull { it.id == sceneId }
+    val scene = repository.getScenes().firstOrNull { it.id.toString() == sceneId }
 
     if (scene == null) {
         Text("Scene not found")
@@ -37,15 +32,12 @@ fun SceneDetailScreen(navController: NavController, sceneId: Int) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(
-            text = scene.title,
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        Text(scene.title, style = MaterialTheme.typography.headlineSmall)
+
+        Spacer(Modifier.height(16.dp))
 
         scene.lines.forEach { line ->
             var showTranslation by remember { mutableStateOf(true) }
-
             val isUser = line.role == Role.CUSTOMER
 
             Row(
@@ -63,7 +55,7 @@ fun SceneDetailScreen(navController: NavController, sceneId: Int) {
                             .background(Color(0xFFE3F2FD))
                             .padding(6.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(Modifier.width(8.dp))
                 }
 
                 Column(
@@ -84,14 +76,11 @@ fun SceneDetailScreen(navController: NavController, sceneId: Int) {
                         .padding(12.dp)
                         .clickable { showTranslation = !showTranslation }
                 ) {
-                    Text(
-                        text = line.textGerman,
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+                    Text(line.textGerman, style = MaterialTheme.typography.bodyLarge)
 
                     if (showTranslation) {
                         Text(
-                            text = line.textTranslation,
+                            line.textTranslation,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.padding(top = 4.dp)
@@ -100,7 +89,7 @@ fun SceneDetailScreen(navController: NavController, sceneId: Int) {
                 }
 
                 if (isUser) {
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Spacer(Modifier.width(8.dp))
                     Icon(
                         imageVector = iconForRole(line.role),
                         contentDescription = null,
@@ -114,8 +103,7 @@ fun SceneDetailScreen(navController: NavController, sceneId: Int) {
                 }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(Modifier.height(12.dp))
         }
     }
 }
-

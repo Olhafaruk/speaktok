@@ -1,4 +1,4 @@
-# SpeakTok
+# SpeakHub
 Foreign Language Dialog Trainer App
 
 [![English](https://img.shields.io/badge/🇬🇧-English-blue)](#english)
@@ -9,7 +9,7 @@ Foreign Language Dialog Trainer App
 <h2 id="english">🇬🇧 English</h2>
 
 ### Overview
-**SpeakTok** is a mobile app designed to help learners practice real-life foreign languages through interactive dialogs, scenes, and role-based conversations. The app focuses on speaking, writing, and understanding in natural, everyday contexts. While the first version centers on German, SpeakTok is built to support multiple languages as it grows: from simple phrases → to full dialogs → to a personal phrase library.
+**SpeakHub** is a mobile app designed to help learners practice real-life foreign languages through interactive dialogs, scenes, and role-based conversations. The app focuses on speaking, writing, and understanding in natural, everyday contexts. While the first version centers on German, SpeakTok is built to support multiple languages as it grows: from simple phrases → to full dialogs → to a personal phrase library.
 
 ### Features
 - Interactive dialogs with multiple roles
@@ -48,7 +48,7 @@ Full license text is available in the `LICENSE` file.
 <h2 id="ukrainian">🇺🇦 Українська</h2>
 
 ### Огляд
-**SpeakTok** — це мобільний застосунок для тренування іноземних мов через інтерактивні діалоги, сцени та рольові ситуації. Основний акцент — на говорінні, письмі та розумінні мови у природних, повсякденних контекстах. Перша версія зосереджена на німецькій, але SpeakTok створений так, щоб підтримувати кілька мов у майбутньому: від простих фраз → до повноцінних діалогів → до особистої бібліотеки фраз.
+**SpeakHub** — це мобільний застосунок для тренування іноземних мов через інтерактивні діалоги, сцени та рольові ситуації. Основний акцент — на говорінні, письмі та розумінні мови у природних, повсякденних контекстах. Перша версія зосереджена на німецькій, але SpeakTok створений так, щоб підтримувати кілька мов у майбутньому: від простих фраз → до повноцінних діалогів → до особистої бібліотеки фраз.
 
 ### Можливості
 - Інтерактивні діалоги з різними ролями

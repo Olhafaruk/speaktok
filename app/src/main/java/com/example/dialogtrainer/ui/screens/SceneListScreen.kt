@@ -6,25 +6,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.example.dialogtrainer.ui.iconForRole
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.example.dialogtrainer.data.model.Role
 import com.example.dialogtrainer.data.repository.SceneRepository
+import com.example.dialogtrainer.ui.iconForRole
 
 @Composable
-fun SceneListScreen(navController: NavController) {
+fun SceneListScreen(
+    onSceneSelected: (String) -> Unit
+) {
     val repository = SceneRepository()
     val scenes = repository.getScenes()
 
@@ -43,9 +39,7 @@ fun SceneListScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 12.dp)
-                    .clickable {
-                        navController.navigate("scene_detail/${scene.id}")
-                    },
+                    .clickable { onSceneSelected(scene.id.toString()) },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -67,12 +61,9 @@ fun SceneListScreen(navController: NavController) {
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
+                        Text(scene.title, style = MaterialTheme.typography.titleMedium)
                         Text(
-                            text = scene.title,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = previewGerman,
+                            previewGerman,
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.padding(top = 4.dp)

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Dialog Trainer</string>
+    <string name="app_name">SpeakHub</string>
     <string name="main_title">Speech comprehension trainer</string>
     <string name="go_to_scenes">Go to scenes</string>
     <string name="scene_list_title">Scene list</string>

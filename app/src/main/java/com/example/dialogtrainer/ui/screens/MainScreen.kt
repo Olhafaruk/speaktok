@@ -1,3 +1,4 @@
+//ui/screens/MainScreen.kt
 package com.example.dialogtrainer.ui.screens
 
 import androidx.compose.foundation.layout.Column
@@ -7,25 +8,32 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.example.dialogtrainer.R
 
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(
+    onNavigateToScenes: () -> Unit,
+    onNavigateToProfile: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(text = stringResource(id = R.string.main_title))
+        Text("Dialog Trainer")
 
         Button(
-            onClick = { navController.navigate("scene_list") },
+            onClick = onNavigateToScenes,
             modifier = Modifier.padding(top = 16.dp)
         ) {
-            Text(text = stringResource(id = R.string.go_to_scenes))
+            Text("Scenes")
+        }
+
+        Button(
+            onClick = onNavigateToProfile,
+            modifier = Modifier.padding(top = 16.dp)
+        ) {
+            Text("Profile")
         }
     }
 }
