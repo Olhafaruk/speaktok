@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import com.example.dialogtrainer.data.model.AppLanguage
 import com.example.dialogtrainer.data.model.UserProfile
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -27,7 +28,7 @@ fun ProfileScreen(
         mutableStateOf(profile.learningLanguages.toMutableSet())
     }
 
-    val availableLanguages = listOf("en", "de", "fr", "es", "it", "pl", "ru", "uk")
+    val availableLanguages = AppLanguage.entries
 
     Column(
         modifier = Modifier
@@ -55,11 +56,12 @@ fun ProfileScreen(
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             availableLanguages.forEach { lang ->
                 FilterChip(
-                    selected = nativeLanguage == lang,
-                    onClick = { nativeLanguage = lang },
-                    label = { Text(lang.uppercase()) }
+                    selected = nativeLanguage == lang.code,
+                    onClick = { nativeLanguage = lang.code },
+                    label = { Text("${lang.flag} ${lang.code.uppercase()}") }
                 )
             }
+
         }
 
         Spacer(Modifier.height(24.dp))
@@ -69,17 +71,20 @@ fun ProfileScreen(
 
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             availableLanguages.forEach { lang ->
+                val isSelected = selectedLearningLanguages.contains(lang.code)
+
                 FilterChip(
-                    selected = selectedLearningLanguages.contains(lang),
+                    selected = isSelected,
                     onClick = {
-                        if (selectedLearningLanguages.contains(lang))
-                            selectedLearningLanguages.remove(lang)
+                        if (isSelected)
+                            selectedLearningLanguages.remove(lang.code)
                         else
-                            selectedLearningLanguages.add(lang)
+                            selectedLearningLanguages.add(lang.code)
                     },
-                    label = { Text(lang.uppercase()) }
+                    label = { Text("${lang.flag} ${lang.code.uppercase()}") }
                 )
             }
+
         }
 
         Spacer(Modifier.height(24.dp))
