@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import com.example.dialogtrainer.data.model.AppLanguage
+import com.example.dialogtrainer.data.model.Country
 import com.example.dialogtrainer.data.model.UserProfile
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -50,6 +51,42 @@ fun ProfileScreen(
 
         Spacer(Modifier.height(16.dp))
 
+
+        Text("Country", style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(8.dp))
+
+        var expanded by remember { mutableStateOf(false) }
+        val selectedCountry = Country.fromTitle(country)
+
+        Box {
+            OutlinedButton(
+                onClick = { expanded = true },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    text = selectedCountry?.let { "${it.flag} ${it.title}" }
+                        ?: "Select country"
+                )
+            }
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                Country.entries.forEach { c ->
+                    DropdownMenuItem(
+                        text = { Text("${c.flag} ${c.title}") },
+                        onClick = {
+                            country = c.title
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
         Text("Native Language", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(8.dp))
 
@@ -86,15 +123,6 @@ fun ProfileScreen(
             }
 
         }
-
-        Spacer(Modifier.height(24.dp))
-
-        OutlinedTextField(
-            value = country,
-            onValueChange = { country = it },
-            label = { Text("Country") },
-            modifier = Modifier.fillMaxWidth()
-        )
 
         Spacer(Modifier.height(32.dp))
 
