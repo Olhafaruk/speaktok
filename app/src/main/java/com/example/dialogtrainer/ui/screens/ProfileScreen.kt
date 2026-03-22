@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.FlowRow
 import com.example.dialogtrainer.data.model.AppLanguage
 import com.example.dialogtrainer.data.model.Country
 import com.example.dialogtrainer.data.model.UserProfile
+import com.example.dialogtrainer.ui.components.InterestsSelector
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -28,6 +29,11 @@ fun ProfileScreen(
     var selectedLearningLanguages by remember(profile.learningLanguages) {
         mutableStateOf(profile.learningLanguages.toMutableSet())
     }
+    var selectedInterests by remember(profile.interests) {
+        mutableStateOf(profile.interests.toSet())
+    }
+    var expanded by remember { mutableStateOf(false) }
+    val selectedCountry = Country.fromTitle(country)
 
     val availableLanguages = AppLanguage.entries
 
@@ -54,9 +60,6 @@ fun ProfileScreen(
 
         Text("Country", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(8.dp))
-
-        var expanded by remember { mutableStateOf(false) }
-        val selectedCountry = Country.fromTitle(country)
 
         Box {
             OutlinedButton(
@@ -124,6 +127,14 @@ fun ProfileScreen(
 
         }
 
+        Spacer(Modifier.height(24.dp))
+
+        InterestsSelector(
+            selectedInterests = selectedInterests,
+            onSelectionChange = { selectedInterests = it }
+        )
+
+
         Spacer(Modifier.height(32.dp))
 
         Button(
@@ -132,7 +143,8 @@ fun ProfileScreen(
                     username = username,
                     nativeLanguage = nativeLanguage,
                     learningLanguages = selectedLearningLanguages.toList(),
-                    country = country
+                    country = country,
+                    interests = selectedInterests.toList()
                 )
                 onSaveProfile(updated)
             },
