@@ -18,6 +18,7 @@ class UserProfileRepositoryImpl(
         val LEARNING_LANGUAGES = stringPreferencesKey("learning_languages")
         val INTERESTS = stringPreferencesKey("interests")
         val COUNTRY = stringPreferencesKey("country")
+        val AVATAR_URI = stringPreferencesKey("avatar_uri")
     }
 
     override val profile: Flow<UserProfile> =
@@ -39,7 +40,9 @@ class UserProfileRepositoryImpl(
                         }
                     }
                     ?: emptyList(),
-                country = prefs[Keys.COUNTRY] ?: ""
+                country = prefs[Keys.COUNTRY] ?: "",
+                avatarUri = prefs[Keys.AVATAR_URI]
+
             )
         }
 
@@ -50,6 +53,8 @@ class UserProfileRepositoryImpl(
             prefs[Keys.LEARNING_LANGUAGES] = profile.learningLanguages.joinToString(",")
             prefs[Keys.INTERESTS] = profile.interests.joinToString(",") { it.name }
             prefs[Keys.COUNTRY] = profile.country
+            prefs[Keys.AVATAR_URI] = profile.avatarUri ?: ""
+
         }
     }
 }

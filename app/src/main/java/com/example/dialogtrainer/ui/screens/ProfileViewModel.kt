@@ -24,4 +24,13 @@ class ProfileViewModel(
             repository.updateProfile(updated)
         }
     }
+
+    fun updateAvatar(uri: String) {
+        viewModelScope.launch {
+            val current = profile.value ?: return@launch
+            val updated = current.copy(avatarUri = uri)
+            repository.updateProfile(updated)
+        }
+    }
+
 }

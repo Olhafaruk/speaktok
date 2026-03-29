@@ -1,27 +1,37 @@
 //ui/screens/ProfileScreen.kt
 package com.example.dialogtrainer.ui.screens
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import com.example.dialogtrainer.data.model.AppLanguage
-import com.example.dialogtrainer.data.model.Country
-import com.example.dialogtrainer.data.model.UserProfile
-import com.example.dialogtrainer.ui.components.InterestsSelector
+import coil.compose.rememberAsyncImagePainter
+import com.example.dialogtrainer.R
+import com.example.dialogtrainer.data.model.*
+import com.example.dialogtrainer.ui.components.MultiSelectDropdown
+import com.example.dialogtrainer.ui.components.SingleSelectDropdown
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     profile: UserProfile,
     onSaveProfile: (UserProfile) -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     var username by remember(profile.username) { mutableStateOf(profile.username) }
     var nativeLanguage by remember(profile.nativeLanguage) { mutableStateOf(profile.nativeLanguage) }
@@ -32,10 +42,24 @@ fun ProfileScreen(
     var selectedInterests by remember(profile.interests) {
         mutableStateOf(profile.interests.toSet())
     }
-    var expanded by remember { mutableStateOf(false) }
+
     val selectedCountry = Country.fromTitle(country)
 
-    val availableLanguages = AppLanguage.entries
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            try {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            } catch (_: Exception) {}
+
+            val updated = profile.copy(avatarUri = uri.toString())
+            onSaveProfile(updated)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -44,8 +68,35 @@ fun ProfileScreen(
             .verticalScroll(scrollState)
     ) {
 
-        Text("User Profile", style = MaterialTheme.typography.headlineSmall)
+        val avatarPainter =
+            if (!profile.avatarUri.isNullOrBlank()) {
+                rememberAsyncImagePainter(model = profile.avatarUri)
+            } else {
+                painterResource(R.drawable.default_avatar)
+            }
 
+        Image(
+            painter = avatarPainter,
+            contentDescription = "Avatar",
+            modifier = Modifier
+                .size(120.dp)
+                .clip(CircleShape)
+                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                .align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Button(
+            onClick = { launcher.launch("image/*") },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Text("Change photo")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text("User Profile", style = MaterialTheme.typography.headlineSmall)
         Spacer(Modifier.height(24.dp))
 
         OutlinedTextField(
@@ -55,85 +106,51 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(Modifier.height(16.dp))
-
-
-        Text("Country", style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(8.dp))
-
-        Box {
-            OutlinedButton(
-                onClick = { expanded = true },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = selectedCountry?.let { "${it.flag} ${it.title}" }
-                        ?: "Select country"
-                )
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                Country.entries.forEach { c ->
-                    DropdownMenuItem(
-                        text = { Text("${c.flag} ${c.title}") },
-                        onClick = {
-                            country = c.title
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
-
         Spacer(Modifier.height(24.dp))
 
-        Text("Native Language", style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(8.dp))
-
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            availableLanguages.forEach { lang ->
-                FilterChip(
-                    selected = nativeLanguage == lang.code,
-                    onClick = { nativeLanguage = lang.code },
-                    label = { Text("${lang.flag} ${lang.code.uppercase()}") }
-                )
-            }
-
-        }
-
-        Spacer(Modifier.height(24.dp))
-
-        Text("Learning Languages", style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(8.dp))
-
-        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            availableLanguages.forEach { lang ->
-                val isSelected = selectedLearningLanguages.contains(lang.code)
-
-                FilterChip(
-                    selected = isSelected,
-                    onClick = {
-                        if (isSelected)
-                            selectedLearningLanguages.remove(lang.code)
-                        else
-                            selectedLearningLanguages.add(lang.code)
-                    },
-                    label = { Text("${lang.flag} ${lang.code.uppercase()}") }
-                )
-            }
-
-        }
-
-        Spacer(Modifier.height(24.dp))
-
-        InterestsSelector(
-            selectedInterests = selectedInterests,
-            onSelectionChange = { selectedInterests = it }
+        // COUNTRY
+        SingleSelectDropdown(
+            label = "Country",
+            options = Country.entries,
+            selected = selectedCountry,
+            optionLabel = { "${it.flag} ${it.title}" },
+            onSelect = { country = it.title }
         )
 
+        Spacer(Modifier.height(24.dp))
+
+        // NATIVE LANGUAGE
+        SingleSelectDropdown(
+            label = "Native Language",
+            options = AppLanguage.entries,
+            selected = AppLanguage.fromCode(nativeLanguage),
+            optionLabel = { "${it.flag} ${it.code.uppercase()}" },
+            onSelect = { nativeLanguage = it.code }
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        // LEARNING LANGUAGES
+        MultiSelectDropdown(
+            label = "Learning Languages",
+            options = AppLanguage.entries,
+            selected = selectedLearningLanguages.mapNotNull { AppLanguage.fromCode(it) }.toSet(),
+            optionLabel = { "${it.flag} ${it.code.uppercase()}" },
+            onSelectionChange = { newSet ->
+                selectedLearningLanguages = newSet.map { it.code }.toMutableSet()
+            }
+        )
+
+        Spacer(Modifier.height(24.dp))
+
+        // INTERESTS
+        MultiSelectDropdown(
+            label = "Interests",
+            options = allInterests,
+            selected = selectedInterests,
+            optionLabel = { it.title },
+            onSelectionChange = { selectedInterests = it }
+        )
 
         Spacer(Modifier.height(32.dp))
 
