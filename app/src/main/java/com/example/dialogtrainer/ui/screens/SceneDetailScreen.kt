@@ -13,12 +13,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.dialogtrainer.data.model.Role
 import com.example.dialogtrainer.data.repository.SceneRepository
 import com.example.dialogtrainer.ui.iconForRole
 
 @Composable
-fun SceneDetailScreen(sceneId: String) {
+fun SceneDetailScreen(
+    sceneId: String,
+    navController: NavController
+) {
     val repository = SceneRepository()
     val scene = repository.getScenes().firstOrNull { it.id.toString() == sceneId }
 
@@ -104,6 +108,16 @@ fun SceneDetailScreen(sceneId: String) {
             }
 
             Spacer(Modifier.height(12.dp))
+        }
+        Spacer(Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                navController.navigate("dialogue/${scene.id}/${scene.title}")
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Start Dialogue")
         }
     }
 }

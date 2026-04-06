@@ -17,8 +17,26 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+
+        val localFile = rootProject.file("local.properties")
+        var apiKey = ""
+
+        if (localFile.exists()) {
+            val lines = localFile.readLines()
+            for (line in lines) {
+                if (line.startsWith("GEMINI_API_KEY=")) {
+                    apiKey = line.substringAfter("GEMINI_API_KEY=").trim()
+                }
+            }
+        }
+
+        buildConfigField(
+            "String",
+            "GEMINI_API_KEY",
+            "\"$apiKey\""
+        )
     }
 
     buildTypes {
@@ -30,12 +48,15 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -48,6 +69,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.datastore:datastore-preferences:1.1.1")

@@ -11,11 +11,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.dialogtrainer.core.AppDependencies
 import com.example.dialogtrainer.data.repository.UserProfileRepositoryImpl
 import com.example.dialogtrainer.data.repository.userProfileDataStore
+import com.example.dialogtrainer.ui.dialogue.DialogueViewModel
+import com.example.dialogtrainer.ui.dialogue.DialogueViewModelFactory
 import com.example.dialogtrainer.ui.screens.*
 import com.example.dialogtrainer.ui.theme.DialogTrainerTheme
 
@@ -58,7 +63,7 @@ fun DialogTrainerApp() {
 
         composable("scene_detail/{id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id") ?: ""
-            SceneDetailScreen(sceneId = id)
+            SceneDetailScreen(sceneId = id, navController = navController)
         }
 
 
@@ -89,5 +94,34 @@ fun DialogTrainerApp() {
                 }
             }
         }
+        composable(
+            route = "dialogue/{sceneId}/{sceneTitle}",
+            arguments = listOf(
+                navArgument("sceneId") { type = NavType.StringType },
+                navArgument("sceneTitle") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+
+            val sceneId = backStackEntry.arguments?.getString("sceneId") ?: ""
+            val sceneTitle = backStackEntry.arguments?.getString("sceneTitle") ?: ""
+
+            val nativeLang = "uk"
+            val learningLang = "en"
+
+            val factory = DialogueViewModelFactory(
+                repository = AppDependencies.dialogueRepository,
+                sceneId = sceneId,
+                nativeLanguageCode = nativeLang,
+                learningLanguageCode = learningLang
+            )
+
+            val viewModel: DialogueViewModel = viewModel(factory = factory)
+
+            DialogueScreen(
+                viewModel = viewModel,
+                sceneTitle = sceneTitle
+            )
+        }
+
     }
 }

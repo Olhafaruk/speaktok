@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import coil.disk.DiskCache
 import com.example.dialogtrainer.data.model.Role
 import com.example.dialogtrainer.data.repository.SceneRepository
 import com.example.dialogtrainer.ui.iconForRole
@@ -29,44 +30,59 @@ fun SceneListScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        Text(
+            text = "Scenes",
+            style = MaterialTheme.typography.headlineSmall,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
         scenes.forEach { scene ->
 
             val firstLine = scene.lines.firstOrNull()
             val previewGerman = firstLine?.textGerman ?: ""
             val previewRole = firstLine?.role ?: Role.NARRATOR
 
-            Row(
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 12.dp)
                     .clickable { onSceneSelected(scene.id.toString()) },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = iconForRole(previewRole),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFE3F2FD))
-                        .padding(8.dp)
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Card(
-                    modifier = Modifier.weight(1f),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    shape = RoundedCornerShape(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Text(scene.title, style = MaterialTheme.typography.titleMedium)
+                    Icon(
+                        imageVector = iconForRole(previewRole),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(Color(0xFFE3F2FD))
+                            .padding(10.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            previewGerman,
+                            text = scene.title,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = previewGerman,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.padding(top = 4.dp)
+                            color = MaterialTheme.colorScheme.secondary
                         )
                     }
                 }
