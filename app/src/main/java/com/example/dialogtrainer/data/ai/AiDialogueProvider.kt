@@ -23,7 +23,8 @@ interface AiDialogueProvider {
         sceneId: String,
         previousLine: DialogueLine,
         userAnswer: String,
-        learningLanguageCode: String
+        learningLanguageCode: String,
+        nativeLanguageCode: String
     ): DialogueLine?
 
     suspend fun listModels(): String

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+
 class DialogueViewModel(
     private val repository: DialogueRepository,
     private val sceneId: String,
@@ -25,46 +26,30 @@ class DialogueViewModel(
     private var lastAgentLine: DialogueLine? = null
 
     init {
-
-        viewModelScope.launch {
-            try {
-                val models = repository.listModels()
-                Log.d("GEMINI_MODELS", models)
-            } catch (e: Exception) {
-                Log.e("GEMINI_MODELS", "Error listing models: ${e.message}")
-            }
-        }
-
-
         startDialogue()
     }
 
     private fun startDialogue() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                errorMessage = null,
-                feedback = null
-            )
+            _uiState.value = _uiState.value.copy(isLoading = true)
 
             try {
                 val firstLine = repository.startDialogue(
-                    sceneId = sceneId,
-                    nativeLanguageCode = nativeLanguageCode,
-                    learningLanguageCode = learningLanguageCode
+                    sceneId,
+                    nativeLanguageCode,
+                    learningLanguageCode
                 )
                 lastAgentLine = firstLine
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     currentLine = firstLine,
                     userAnswer = "",
-                    feedback = null,
                     isFinished = false
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = e.message ?: "Failed to start dialogue"
+                    errorMessage = e.message
                 )
             }
         }
@@ -80,17 +65,14 @@ class DialogueViewModel(
         if (answer.isEmpty()) return
 
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                errorMessage = null
-            )
+            _uiState.value = _uiState.value.copy(isLoading = true)
 
             try {
                 val feedback = repository.evaluateAnswer(
-                    sceneId = sceneId,
-                    previousLine = agentLine,
-                    userAnswer = answer,
-                    learningLanguageCode = learningLanguageCode
+                    sceneId,
+                    agentLine,
+                    answer,
+                    learningLanguageCode
                 )
 
                 _uiState.value = _uiState.value.copy(
@@ -100,7 +82,7 @@ class DialogueViewModel(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = e.message ?: "Failed to evaluate answer"
+                    errorMessage = e.message
                 )
             }
         }
@@ -112,17 +94,15 @@ class DialogueViewModel(
         if (answer.isEmpty()) return
 
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                errorMessage = null
-            )
+            _uiState.value = _uiState.value.copy(isLoading = true)
 
             try {
                 val nextLine = repository.nextLine(
-                    sceneId = sceneId,
-                    previousLine = agentLine,
-                    userAnswer = answer,
-                    learningLanguageCode = learningLanguageCode
+                    sceneId,
+                    agentLine,
+                    answer,
+                    learningLanguageCode,
+                    nativeLanguageCode
                 )
 
                 if (nextLine == null) {
@@ -142,7 +122,7 @@ class DialogueViewModel(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = e.message ?: "Failed to get next line"
+                    errorMessage = e.message
                 )
             }
         }

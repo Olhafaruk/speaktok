@@ -15,9 +15,9 @@ class DialogueRepository(
         learningLanguageCode: String
     ): DialogueLine {
         return aiProvider.generateFirstLine(
-            sceneId = sceneId,
-            nativeLanguageCode = nativeLanguageCode,
-            learningLanguageCode = learningLanguageCode
+            sceneId,
+            nativeLanguageCode,
+            learningLanguageCode
         )
     }
 
@@ -28,10 +28,10 @@ class DialogueRepository(
         learningLanguageCode: String
     ): Feedback {
         return aiProvider.evaluateUserAnswer(
-            sceneId = sceneId,
-            previousLine = previousLine,
-            userAnswer = userAnswer,
-            learningLanguageCode = learningLanguageCode
+            sceneId,
+            previousLine,
+            userAnswer,
+            learningLanguageCode
         )
     }
 
@@ -39,16 +39,20 @@ class DialogueRepository(
         sceneId: String,
         previousLine: DialogueLine,
         userAnswer: String,
-        learningLanguageCode: String
+        learningLanguageCode: String,
+        nativeLanguageCode: String
     ): DialogueLine? {
         return aiProvider.generateNextLine(
-            sceneId = sceneId,
-            previousLine = previousLine,
-            userAnswer = userAnswer,
-            learningLanguageCode = learningLanguageCode
+            sceneId,
+            previousLine,
+            userAnswer,
+            learningLanguageCode,
+            nativeLanguageCode
         )
     }
+
     suspend fun listModels(): String {
         return aiProvider.listModels()
     }
 }
+

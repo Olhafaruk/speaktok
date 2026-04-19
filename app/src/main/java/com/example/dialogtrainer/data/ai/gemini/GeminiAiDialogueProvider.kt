@@ -20,7 +20,9 @@ class GeminiAiDialogueProvider(
     private val endpoint =
         "https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent"
 
-
+    // ---------------------------------------------------------
+    // 1) FIRST LINE
+    // ---------------------------------------------------------
     override suspend fun generateFirstLine(
         sceneId: String,
         nativeLanguageCode: String,
@@ -28,16 +30,26 @@ class GeminiAiDialogueProvider(
     ): DialogueLine = withContext(Dispatchers.IO) {
 
         val prompt = """
-            You are an English dialogue partner for a language learning app.
-            Scene: $sceneId
-            User's native language: $nativeLanguageCode
-            Target language: $learningLanguageCode
+You are a dialogue partner in a language‑learning app.
 
-            Start the conversation naturally.
-            Respond ONLY as the agent.
-        """.trimIndent()
+TARGET LANGUAGE: $learningLanguageCode
+NATIVE LANGUAGE: $nativeLanguageCode
 
-        val text = callGemini(prompt)
+Your task:
+1. Speak ONLY in the target language.
+2. ALWAYS provide a translation into the native language.
+3. Format EXACTLY like this:
+
+<target_language_sentence>
+<native_language_translation>
+
+Scene: $sceneId
+
+Start the conversation naturally.
+Respond ONLY with the two lines.
+""".trimIndent()
+
+        val text = callGemini(prompt).trim()
 
         DialogueLine(
             speaker = Speaker.AGENT,
@@ -45,6 +57,9 @@ class GeminiAiDialogueProvider(
         )
     }
 
+    // ---------------------------------------------------------
+    // 2) EVALUATE
+    // ---------------------------------------------------------
     override suspend fun evaluateUserAnswer(
         sceneId: String,
         previousLine: DialogueLine,
@@ -53,26 +68,40 @@ class GeminiAiDialogueProvider(
     ): Feedback = withContext(Dispatchers.IO) {
 
         val prompt = """
-            You are a language tutor.
-            Scene: $sceneId
-            Target language: $learningLanguageCode
+You are a strict JSON generator.
 
-            Previous agent line:
-            "${previousLine.text}"
+RULES:
+- Return ONLY valid JSON.
+- No markdown.
+- No code fences.
+- No explanations.
+- No comments.
+- No translation.
+- No text before or after JSON.
+- JSON MUST start with '{' and end with '}'.
 
-            User answer:
-            "$userAnswer"
+TASK:
+Evaluate the user's answer in the target language ($learningLanguageCode).
 
-            Evaluate the answer.
-            Return JSON:
-            {
-              "score": number,
-              "corrected": "string",
-              "comment": "string"
-            }
-        """.trimIndent()
+Return EXACTLY this JSON:
 
-        val raw = callGemini(prompt)
+{
+  "score": number,
+  "corrected": "string",
+  "comment": "string"
+}
+
+DATA:
+Scene: $sceneId
+
+Previous agent line:
+"${previousLine.text}"
+
+User answer:
+"$userAnswer"
+""".trimIndent()
+
+        val raw = callGemini(prompt).trim()
         val json = JSONObject(raw)
 
         Feedback(
@@ -82,27 +111,45 @@ class GeminiAiDialogueProvider(
         )
     }
 
+    // ---------------------------------------------------------
+    // 3) NEXT LINE
+    // ---------------------------------------------------------
     override suspend fun generateNextLine(
         sceneId: String,
         previousLine: DialogueLine,
         userAnswer: String,
-        learningLanguageCode: String
+        learningLanguageCode: String,
+        nativeLanguageCode: String
     ): DialogueLine? = withContext(Dispatchers.IO) {
 
         val prompt = """
-            Continue the conversation.
-            Scene: $sceneId
-            Target language: $learningLanguageCode
+You are a dialogue partner in a language‑learning app.
 
-            Previous agent line:
-            "${previousLine.text}"
+TARGET LANGUAGE: $learningLanguageCode
+NATIVE LANGUAGE: $nativeLanguageCode
 
-            User answer:
-            "$userAnswer"
+Your task:
+1. Continue the conversation in the target language.
+2. ALWAYS provide a translation into the native language.
+3. Format EXACTLY like this:
 
-            If conversation is over, respond exactly: [END]
-            Otherwise respond with the next agent line only.
-        """.trimIndent()
+<target_language_sentence>
+<native_language_translation>
+
+If the conversation is over, respond EXACTLY with:
+[END]
+
+Scene: $sceneId
+
+Previous agent line:
+"${previousLine.text}"
+
+User answer:
+"$userAnswer"
+
+Respond ONLY with the two lines or [END].
+No markdown. No explanations. No extra text.
+""".trimIndent()
 
         val text = callGemini(prompt).trim()
 
@@ -110,6 +157,9 @@ class GeminiAiDialogueProvider(
         else DialogueLine(Speaker.AGENT, text)
     }
 
+    // ---------------------------------------------------------
+    // LOW-LEVEL HTTP CALL
+    // ---------------------------------------------------------
     private fun callGemini(prompt: String): String {
         val url = URL("$endpoint?key=$apiKey")
         val connection = (url.openConnection() as HttpURLConnection).apply {
@@ -150,7 +200,9 @@ class GeminiAiDialogueProvider(
         return parts.getJSONObject(0).getString("text")
     }
 
-
+    // ---------------------------------------------------------
+    // LIST MODELS
+    // ---------------------------------------------------------
     override suspend fun listModels(): String = withContext(Dispatchers.IO) {
         val url = URL("https://generativelanguage.googleapis.com/v1/models?key=$apiKey")
         val connection = (url.openConnection() as HttpURLConnection).apply {
@@ -168,5 +220,4 @@ class GeminiAiDialogueProvider(
 
         response
     }
-
 }

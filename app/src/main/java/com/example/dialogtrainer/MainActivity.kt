@@ -105,23 +105,44 @@ fun DialogTrainerApp() {
             val sceneId = backStackEntry.arguments?.getString("sceneId") ?: ""
             val sceneTitle = backStackEntry.arguments?.getString("sceneTitle") ?: ""
 
-            val nativeLang = "uk"
-            val learningLang = "en"
+            val context = LocalContext.current
+            val profileRepository = UserProfileRepositoryImpl(context.userProfileDataStore)
 
-            val factory = DialogueViewModelFactory(
-                repository = AppDependencies.dialogueRepository,
-                sceneId = sceneId,
-                nativeLanguageCode = nativeLang,
-                learningLanguageCode = learningLang
-            )
 
-            val viewModel: DialogueViewModel = viewModel(factory = factory)
+            val profileState = profileRepository.profile.collectAsState(initial = null)
 
-            DialogueScreen(
-                viewModel = viewModel,
-                sceneTitle = sceneTitle
-            )
+            val profile = profileState.value
+
+            if (profile == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+
+                val nativeLang = profile.nativeLanguage.ifBlank { "uk" }
+
+
+                val learningLang = profile.learningLanguages.firstOrNull().orEmpty().ifBlank { "en" }
+
+                val factory = DialogueViewModelFactory(
+                    repository = AppDependencies.dialogueRepository,
+                    sceneId = sceneId,
+                    nativeLanguageCode = nativeLang,
+                    learningLanguageCode = learningLang
+                )
+
+                val viewModel: DialogueViewModel = viewModel(factory = factory)
+
+                DialogueScreen(
+                    viewModel = viewModel,
+                    sceneTitle = sceneTitle
+                )
+            }
         }
+
 
     }
 }
