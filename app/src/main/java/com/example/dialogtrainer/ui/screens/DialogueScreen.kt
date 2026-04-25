@@ -129,6 +129,10 @@ fun DialogueScreen(
                 ) {
                     Text("Next")
                 }
+                Button(onClick = { viewModel.finishDialogue() }) {
+                    Text("End")
+                }
+
             }
         }
     }

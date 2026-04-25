@@ -20,18 +20,18 @@ import com.example.dialogtrainer.data.model.allInterests
 fun InterestsSelector(
     selectedInterests: Set<Interest>,
     onSelectionChange: (Set<Interest>) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Text(
         text = "Interests",
-        style = MaterialTheme.typography.titleMedium
+        style = MaterialTheme.typography.titleMedium,
     )
 
     Spacer(modifier = Modifier.height(8.dp))
 
     FlowRow(
         modifier = modifier,
-        maxItemsInEachRow = 3
+        maxItemsInEachRow = 3,
     ) {
         allInterests.forEach { interest ->
             val isSelected = interest in selectedInterests
@@ -49,8 +49,8 @@ fun InterestsSelector(
                 label = { Text(interest.title) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                ),
             )
         }
     }

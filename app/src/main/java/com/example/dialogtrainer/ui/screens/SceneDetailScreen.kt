@@ -8,7 +8,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -21,7 +20,7 @@ import com.example.dialogtrainer.ui.iconForRole
 @Composable
 fun SceneDetailScreen(
     sceneId: String,
-    navController: NavController
+    navController: NavController,
 ) {
     val repository = SceneRepository()
     val scene = repository.getScenes().firstOrNull { it.id.toString() == sceneId }
@@ -41,12 +40,12 @@ fun SceneDetailScreen(
         Spacer(Modifier.height(16.dp))
 
         scene.lines.forEach { line ->
-            var showTranslation by remember { mutableStateOf(true) }
+            var showTranslation by remember { mutableStateOf(value = true) }
             val isUser = line.role == Role.CUSTOMER
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start
+                horizontalArrangement = if (isUser) Arrangement.End else Arrangement.Start,
             ) {
                 if (!isUser) {
                     Icon(
@@ -70,7 +69,7 @@ fun SceneDetailScreen(
                                 topStart = 16.dp,
                                 topEnd = 16.dp,
                                 bottomStart = if (isUser) 16.dp else 0.dp,
-                                bottomEnd = if (isUser) 0.dp else 16.dp
+                                bottomEnd = if (isUser) 0.dp else 16.dp,
                             )
                         )
                         .background(

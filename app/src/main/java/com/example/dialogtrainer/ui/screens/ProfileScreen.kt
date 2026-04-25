@@ -28,19 +28,19 @@ import com.example.dialogtrainer.ui.components.SingleSelectDropdown
 @Composable
 fun ProfileScreen(
     profile: UserProfile,
-    onSaveProfile: (UserProfile) -> Unit
+    onSaveProfile: (UserProfile) -> Unit,
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
 
-    var username by remember(profile.username) { mutableStateOf(profile.username) }
-    var nativeLanguage by remember(profile.nativeLanguage) { mutableStateOf(profile.nativeLanguage) }
-    var country by remember(profile.country) { mutableStateOf(profile.country) }
+    var username by remember(profile.username) { mutableStateOf(value = profile.username) }
+    var nativeLanguage by remember(profile.nativeLanguage) { mutableStateOf(value = profile.nativeLanguage) }
+    var country by remember(profile.country) { mutableStateOf(value = profile.country) }
     var selectedLearningLanguages by remember(profile.learningLanguages) {
-        mutableStateOf(profile.learningLanguages.toMutableSet())
+        mutableStateOf(value = profile.learningLanguages.toMutableSet())
     }
     var selectedInterests by remember(profile.interests) {
-        mutableStateOf(profile.interests.toSet())
+        mutableStateOf(value = profile.interests.toSet())
     }
 
     val selectedCountry = Country.fromTitle(country)
@@ -114,7 +114,7 @@ fun ProfileScreen(
             options = Country.entries,
             selected = selectedCountry,
             optionLabel = { "${it.flag} ${it.title}" },
-            onSelect = { country = it.title }
+            onSelect = { country = it.title },
         )
 
         Spacer(Modifier.height(24.dp))
@@ -125,7 +125,7 @@ fun ProfileScreen(
             options = AppLanguage.entries,
             selected = AppLanguage.fromCode(nativeLanguage),
             optionLabel = { "${it.flag} ${it.code.uppercase()}" },
-            onSelect = { nativeLanguage = it.code }
+            onSelect = { nativeLanguage = it.code },
         )
 
         Spacer(Modifier.height(24.dp))
@@ -138,7 +138,7 @@ fun ProfileScreen(
             optionLabel = { "${it.flag} ${it.code.uppercase()}" },
             onSelectionChange = { newSet ->
                 selectedLearningLanguages = newSet.map { it.code }.toMutableSet()
-            }
+            },
         )
 
         Spacer(Modifier.height(24.dp))
@@ -149,7 +149,7 @@ fun ProfileScreen(
             options = allInterests,
             selected = selectedInterests,
             optionLabel = { it.title },
-            onSelectionChange = { selectedInterests = it }
+            onSelectionChange = { selectedInterests = it },
         )
 
         Spacer(Modifier.height(32.dp))
@@ -161,7 +161,7 @@ fun ProfileScreen(
                     nativeLanguage = nativeLanguage,
                     learningLanguages = selectedLearningLanguages.toList(),
                     country = country,
-                    interests = selectedInterests.toList()
+                    interests = selectedInterests.toList(),
                 )
                 onSaveProfile(updated)
             },

@@ -12,9 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.example.dialogtrainer.core.AppDependencies
 import com.example.dialogtrainer.data.repository.UserProfileRepositoryImpl
@@ -22,6 +20,11 @@ import com.example.dialogtrainer.data.repository.userProfileDataStore
 import com.example.dialogtrainer.ui.dialogue.DialogueViewModel
 import com.example.dialogtrainer.ui.dialogue.DialogueViewModelFactory
 import com.example.dialogtrainer.ui.screens.*
+import com.example.dialogtrainer.ui.screens.dialogue_history.DialogueHistoryScreen
+import com.example.dialogtrainer.ui.screens.dialogue_history.DialogueHistoryViewModel
+import com.example.dialogtrainer.ui.screens.dialogue_history.DialogueHistoryViewModelFactory
+import com.example.dialogtrainer.ui.screens.dialogue_list.DialogueListScreen
+import com.example.dialogtrainer.ui.screens.dialogue_list.DialogueListViewModel
 import com.example.dialogtrainer.ui.theme.DialogTrainerTheme
 
 class MainActivity : ComponentActivity() {
@@ -44,29 +47,88 @@ fun DialogTrainerApp() {
         startDestination = "main"
     ) {
 
-
+        // MAIN SCREEN
         composable("main") {
             MainScreen(
-                onNavigateToScenes = { navController.navigate("scenes") },
+                onNavigateToScenes = { navController.navigate("dialogues") },
                 onNavigateToProfile = { navController.navigate("profile") }
             )
         }
 
+        // DIALOGUE LIST SCREEN
+        composable("dialogues") {
+            val viewModel: DialogueListViewModel = viewModel(
+                factory = DialogueListViewModel.Factory(AppDependencies.dialogueHistoryRepository)
 
-        composable("scenes") {
-            SceneListScreen(
-                onSceneSelected = { id ->
-                    navController.navigate("scene_detail/$id")
+            )
+
+            DialogueListScreen(
+                viewModel = viewModel,
+                onOpenDialogue = { id ->
+                    navController.navigate("dialogue_history/$id")
+                },
+                onStartNewDialogue = {
+                    navController.navigate("dialogue_new")
                 }
             )
         }
 
-        composable("scene_detail/{id}") { backStackEntry ->
-            val id = backStackEntry.arguments?.getString("id") ?: ""
-            SceneDetailScreen(sceneId = id, navController = navController)
+        // DIALOGUE HISTORY SCREEN
+        composable(
+            route = "dialogue_history/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val id = backStackEntry.arguments?.getLong("id") ?: 0L
+
+            val viewModel: DialogueHistoryViewModel = viewModel(
+                factory = DialogueHistoryViewModelFactory(
+                    dialogueId = id,
+                    repository = AppDependencies.dialogueHistoryRepository
+                )
+            )
+
+            DialogueHistoryScreen(
+                viewModel = viewModel,
+                onBack = { navController.popBackStack() }
+            )
         }
 
+        // NEW DIALOGUE SCREEN
+        composable("dialogue_new") {
+            val context = LocalContext.current
+            val profileRepository = UserProfileRepositoryImpl(context.userProfileDataStore)
 
+            val profileState = profileRepository.profile.collectAsState(initial = null)
+            val profile = profileState.value
+
+            if (profile == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                val nativeLang = profile.nativeLanguage.ifBlank { "uk" }
+                val learningLang = profile.learningLanguages.firstOrNull().orEmpty().ifBlank { "en" }
+
+                val viewModel: DialogueViewModel = viewModel(
+                    factory = DialogueViewModelFactory(
+                        repository = AppDependencies.aiDialogueRepository,
+                        sceneId = null,
+                        nativeLanguageCode = nativeLang,
+                        learningLanguageCode = learningLang
+                    )
+                )
+
+                DialogueScreen(
+                    viewModel = viewModel,
+                    sceneTitle = "Новый диалог"
+                )
+            }
+        }
+
+        // PROFILE SCREEN
         composable("profile") {
             val context = LocalContext.current
             val repository = UserProfileRepositoryImpl(context.userProfileDataStore)
@@ -90,59 +152,8 @@ fun DialogTrainerApp() {
                         profile = profile,
                         onSaveProfile = viewModel::saveProfile
                     )
-
                 }
             }
         }
-        composable(
-            route = "dialogue/{sceneId}/{sceneTitle}",
-            arguments = listOf(
-                navArgument("sceneId") { type = NavType.StringType },
-                navArgument("sceneTitle") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-
-            val sceneId = backStackEntry.arguments?.getString("sceneId") ?: ""
-            val sceneTitle = backStackEntry.arguments?.getString("sceneTitle") ?: ""
-
-            val context = LocalContext.current
-            val profileRepository = UserProfileRepositoryImpl(context.userProfileDataStore)
-
-
-            val profileState = profileRepository.profile.collectAsState(initial = null)
-
-            val profile = profileState.value
-
-            if (profile == null) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-
-                val nativeLang = profile.nativeLanguage.ifBlank { "uk" }
-
-
-                val learningLang = profile.learningLanguages.firstOrNull().orEmpty().ifBlank { "en" }
-
-                val factory = DialogueViewModelFactory(
-                    repository = AppDependencies.dialogueRepository,
-                    sceneId = sceneId,
-                    nativeLanguageCode = nativeLang,
-                    learningLanguageCode = learningLang
-                )
-
-                val viewModel: DialogueViewModel = viewModel(factory = factory)
-
-                DialogueScreen(
-                    viewModel = viewModel,
-                    sceneTitle = sceneTitle
-                )
-            }
-        }
-
-
     }
 }

@@ -1,21 +1,18 @@
 //ui/dialogue/DialogueViewModel.kt
 package com.example.dialogtrainer.ui.dialogue
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dialogtrainer.data.model.dialogue.DialogueLine
 import com.example.dialogtrainer.data.model.dialogue.DialogueUiState
-import com.example.dialogtrainer.data.model.dialogue.Speaker
 import com.example.dialogtrainer.data.repository.DialogueRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-
 class DialogueViewModel(
     private val repository: DialogueRepository,
-    private val sceneId: String,
+    private val sceneId: String?,
     private val nativeLanguageCode: String,
     private val learningLanguageCode: String
 ) : ViewModel() {
@@ -35,17 +32,22 @@ class DialogueViewModel(
 
             try {
                 val firstLine = repository.startDialogue(
-                    sceneId,
+                    sceneId ?: "",
                     nativeLanguageCode,
                     learningLanguageCode
                 )
+
                 lastAgentLine = firstLine
+
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     currentLine = firstLine,
                     userAnswer = "",
-                    isFinished = false
+                    isFinished = false,
+                    feedback = null,
+                    errorMessage = null
                 )
+
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -69,7 +71,7 @@ class DialogueViewModel(
 
             try {
                 val feedback = repository.evaluateAnswer(
-                    sceneId,
+                    sceneId ?: "",
                     agentLine,
                     answer,
                     learningLanguageCode
@@ -79,6 +81,7 @@ class DialogueViewModel(
                     isLoading = false,
                     feedback = feedback
                 )
+
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -98,7 +101,7 @@ class DialogueViewModel(
 
             try {
                 val nextLine = repository.nextLine(
-                    sceneId,
+                    sceneId ?: "",
                     agentLine,
                     answer,
                     learningLanguageCode,
@@ -119,6 +122,7 @@ class DialogueViewModel(
                         feedback = null
                     )
                 }
+
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,

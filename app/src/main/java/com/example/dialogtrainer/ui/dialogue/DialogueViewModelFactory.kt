@@ -6,7 +6,7 @@ import com.example.dialogtrainer.data.repository.DialogueRepository
 
 class DialogueViewModelFactory(
     private val repository: DialogueRepository,
-    private val sceneId: String,
+    private val sceneId: String?,
     private val nativeLanguageCode: String,
     private val learningLanguageCode: String
 ) : ViewModelProvider.Factory {

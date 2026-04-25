@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
-    private val repository: UserProfileRepository
+    private val repository: UserProfileRepository,
 ) : ViewModel() {
 
     val profile: StateFlow<UserProfile?> =

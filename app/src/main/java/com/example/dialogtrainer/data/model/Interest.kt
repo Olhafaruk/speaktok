@@ -9,7 +9,7 @@ enum class Interest(val title: String) {
     FITNESS("Fitness"),
     COOKING("Cooking"),
     IT("IT"),
-    LANGUAGES("Languages")
+    LANGUAGES("Languages"),
 }
 
 val allInterests = listOf(
@@ -20,5 +20,5 @@ val allInterests = listOf(
     Interest.FITNESS,
     Interest.COOKING,
     Interest.IT,
-    Interest.LANGUAGES
+    Interest.LANGUAGES,
 )

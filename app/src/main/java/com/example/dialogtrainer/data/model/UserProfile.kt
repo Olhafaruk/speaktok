@@ -1,7 +1,6 @@
 //data/model/UserProfile.kt
 package com.example.dialogtrainer.data.model
 
-import android.net.Uri
 import com.example.dialogtrainer.data.model.Interest
 
 data class UserProfile(
@@ -10,8 +9,7 @@ data class UserProfile(
     val learningLanguages: List<String> = emptyList(),
     val interests: List<Interest> = emptyList(),
     val country: String = "",
-    val avatarUri: String? = null
-
+    val avatarUri: String? = null,
 )
 
 

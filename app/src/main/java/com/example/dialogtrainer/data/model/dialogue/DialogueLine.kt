@@ -3,5 +3,6 @@ package com.example.dialogtrainer.data.model.dialogue
 
 data class DialogueLine(
     val speaker: Speaker,
-    val text: String
+    val text: String,
+    val translation: String? = null
 )

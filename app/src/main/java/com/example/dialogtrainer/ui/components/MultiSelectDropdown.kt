@@ -14,16 +14,16 @@ fun <T> MultiSelectDropdown(
     selected: Set<T>,
     optionLabel: (T) -> String,
     onSelectionChange: (Set<T>) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(value = false) }
 
     val selectedText = selected.joinToString(", ") { optionLabel(it) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier = modifier
+        modifier = modifier,
     ) {
         OutlinedTextField(
             value = selectedText,
@@ -32,8 +32,8 @@ fun <T> MultiSelectDropdown(
             label = { Text(label) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth()
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                .fillMaxWidth(),
         )
 
         ExposedDropdownMenu(

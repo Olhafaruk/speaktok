@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class UserProfileRepositoryImpl(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
 ) : UserProfileRepository {
 
     private object Keys {
@@ -35,14 +35,13 @@ class UserProfileRepositoryImpl(
                     ?.mapNotNull { name ->
                         try {
                             Interest.valueOf(name)
-                        } catch (e: Exception) {
+                        } catch (_: Exception) {
                             null
                         }
                     }
                     ?: emptyList(),
                 country = prefs[Keys.COUNTRY] ?: "",
-                avatarUri = prefs[Keys.AVATAR_URI]
-
+                avatarUri = prefs[Keys.AVATAR_URI],
             )
         }
 
@@ -54,7 +53,6 @@ class UserProfileRepositoryImpl(
             prefs[Keys.INTERESTS] = profile.interests.joinToString(",") { it.name }
             prefs[Keys.COUNTRY] = profile.country
             prefs[Keys.AVATAR_URI] = profile.avatarUri ?: ""
-
         }
     }
 }
