@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.example.dialogtrainer.data.model.dialogue.DialogueLine
 import com.example.dialogtrainer.data.model.dialogue.Speaker
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DialogueHistoryScreen(
     viewModel: DialogueHistoryViewModel,
@@ -26,14 +27,17 @@ fun DialogueHistoryScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(dialogue?.title ?: "Диалог") },
+                title = { Text(dialogue?.title ?: "Dialogue") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Default.ArrowBack, contentDescription = null)
                     }
                 },
                 actions = {
-                    IconButton(onClick = { viewModel.delete(onBack) }) {
+                    IconButton(onClick = {
+                        viewModel.delete()
+                        onBack()
+                    }) {
                         Icon(Icons.Default.Delete, contentDescription = null)
                     }
                 }

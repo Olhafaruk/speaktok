@@ -8,6 +8,7 @@ import com.example.dialogtrainer.data.model.dialogue.DialogueUiState
 import com.example.dialogtrainer.data.repository.DialogueRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DialogueViewModel(
@@ -131,4 +132,15 @@ class DialogueViewModel(
             }
         }
     }
+
+    fun finishDialogue() {
+        _uiState.update { state ->
+            state.copy(
+                isFinished = true,
+                feedback = null,
+                userAnswer = ""
+            )
+        }
+    }
+
 }

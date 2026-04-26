@@ -32,14 +32,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             DialogTrainerTheme {
-                DialogTrainerApp()
+                DialogTrainerNavHost()
             }
         }
     }
 }
 
 @Composable
-fun DialogTrainerApp() {
+fun DialogTrainerNavHost() {
     val navController = rememberNavController()
 
     NavHost(
@@ -50,10 +50,12 @@ fun DialogTrainerApp() {
         // MAIN SCREEN
         composable("main") {
             MainScreen(
-                onNavigateToScenes = { navController.navigate("dialogues") },
-                onNavigateToProfile = { navController.navigate("profile") }
+                onStartDialogue = { navController.navigate("dialogue_new") },
+                onOpenHistory = { navController.navigate("dialogues") },
+                onOpenProfile = { navController.navigate("profile") }
             )
         }
+
 
         // DIALOGUE LIST SCREEN
         composable("dialogues") {
@@ -79,6 +81,11 @@ fun DialogTrainerApp() {
             arguments = listOf(navArgument("id") { type = NavType.LongType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getLong("id") ?: 0L
+
+            if (id == 0L) {
+                navController.popBackStack()
+                return@composable
+            }
 
             val viewModel: DialogueHistoryViewModel = viewModel(
                 factory = DialogueHistoryViewModelFactory(
@@ -123,7 +130,10 @@ fun DialogTrainerApp() {
 
                 DialogueScreen(
                     viewModel = viewModel,
-                    sceneTitle = "Новый диалог"
+                    sceneTitle = "New dialogue",
+                    onEnd = {
+                        navController.popBackStack("main", false)
+                    }
                 )
             }
         }

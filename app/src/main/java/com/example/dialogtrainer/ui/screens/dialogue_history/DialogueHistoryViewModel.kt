@@ -28,18 +28,26 @@ class DialogueHistoryViewModel(
 
     private fun load() {
         viewModelScope.launch {
-            _dialogue.value = repository.getAllDialogues().find { it.id == dialogueId }
-            _messages.value = repository.getDialogueMessages(dialogueId)
+            val all = repository.getAllDialogues()
+            val dlg = all.find { it.id == dialogueId }
+
+            _dialogue.value = dlg
+
+            if (dlg != null) {
+                _messages.value = repository.getDialogueMessages(dialogueId)
+            } else {
+                _messages.value = emptyList()
+            }
         }
     }
 
-    fun delete(onDeleted: () -> Unit) {
+    fun delete() {
         viewModelScope.launch {
             repository.deleteDialogue(dialogueId)
-            onDeleted()
         }
     }
 }
+
 
 class DialogueHistoryViewModelFactory(
     private val dialogueId: Long,

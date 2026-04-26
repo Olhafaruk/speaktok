@@ -13,7 +13,8 @@ import com.example.dialogtrainer.ui.dialogue.DialogueViewModel
 @Composable
 fun DialogueScreen(
     viewModel: DialogueViewModel,
-    sceneTitle: String
+    sceneTitle: String,
+    onEnd: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
 
@@ -129,7 +130,9 @@ fun DialogueScreen(
                 ) {
                     Text("Next")
                 }
-                Button(onClick = { viewModel.finishDialogue() }) {
+                Button(onClick = { viewModel.finishDialogue()
+                onEnd()
+                }) {
                     Text("End")
                 }
 

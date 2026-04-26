@@ -4,31 +4,20 @@ package com.example.dialogtrainer.core
 import android.content.Context
 import androidx.room.Room
 import com.example.dialogtrainer.BuildConfig
-import com.example.dialogtrainer.data.ai.AiDialogueProvider
 import com.example.dialogtrainer.data.ai.gemini.GeminiAiDialogueProvider
 import com.example.dialogtrainer.data.local.room.AppDatabase
-import com.example.dialogtrainer.data.local.room.DialogueDao
 import com.example.dialogtrainer.data.repository.DialogueRepository
 import com.example.dialogtrainer.data.repository.history.DialogueHistoryRepository
 import com.example.dialogtrainer.data.repository.history.DialogueHistoryRepositoryImpl
 
 object AppDependencies {
 
-    lateinit var appContext: Context
+    private lateinit var appContext: Context
 
-    // Gemini provider
-    private val aiProvider: AiDialogueProvider by lazy {
-        GeminiAiDialogueProvider(
-            apiKey = BuildConfig.GEMINI_API_KEY
-        )
+    fun init(context: Context) {
+        appContext = context.applicationContext
     }
 
-    // Repository for generating dialogues (Gemini)
-    val aiDialogueRepository: DialogueRepository by lazy {
-        DialogueRepository(aiProvider)
-    }
-
-    // Room database
     val database: AppDatabase by lazy {
         Room.databaseBuilder(
             appContext,
@@ -37,12 +26,17 @@ object AppDependencies {
         ).build()
     }
 
-    val dialogueDao: DialogueDao by lazy {
-        database.dialogueDao()
+    val dialogueHistoryRepository: DialogueHistoryRepository by lazy {
+        DialogueHistoryRepositoryImpl(
+            dao = database.dialogueDao()
+        )
     }
 
-    // Repository for saving/loading dialogue history (Room)
-    val dialogueHistoryRepository: DialogueHistoryRepository by lazy {
-        DialogueHistoryRepositoryImpl(dialogueDao)
+    val aiDialogueRepository: DialogueRepository by lazy {
+        DialogueRepository(
+            aiProvider = GeminiAiDialogueProvider(
+                apiKey = BuildConfig.GEMINI_API_KEY
+            )
+        )
     }
 }
