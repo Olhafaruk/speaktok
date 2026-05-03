@@ -7,8 +7,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.dialogtrainer.core.AppDependencies
 import com.example.dialogtrainer.data.model.dialogue.Speaker
 import com.example.dialogtrainer.ui.dialogue.DialogueViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun DialogueScreen(
@@ -17,6 +19,56 @@ fun DialogueScreen(
     onEnd: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+    val scope = rememberCoroutineScope()
+
+    var showSaveDialog by remember { mutableStateOf(false) }
+
+    if (showSaveDialog) {
+        AlertDialog(
+            onDismissRequest = { showSaveDialog = false },
+            title = { Text("Save Dialogue?") },
+            text = { Text("Du you want to save this dialogue in history?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showSaveDialog = false
+                        scope.launch {
+                            val messages = viewModel.messages
+                            if (messages.isNotEmpty()) {
+                                val  now = System.currentTimeMillis()
+                                val title = sceneTitle.ifBlank {
+                                    messages.firstOrNull { it.speaker == Speaker.AGENT }?.text
+                                        ?: "Dialogue"
+                                }
+                                AppDependencies.dialogueHistoryRepository.saveDialogue(
+                                    title = title,
+                                    createdAt = now,
+                                    updatedAt = now,
+                                    languageCode = "en",
+                                    messages = messages
+                                )
+                            }
+                            onEnd()
+                        }
+                    }
+                ) {
+                    Text("Save")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showSaveDialog = false
+                        onEnd()
+                    }
+                ) {
+                    Text("Don`t save")
+                }
+            }
+
+
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -130,9 +182,12 @@ fun DialogueScreen(
                 ) {
                     Text("Next")
                 }
-                Button(onClick = { viewModel.finishDialogue()
-                onEnd()
-                }) {
+                Button(
+                    onClick = {
+                        viewModel.finishDialogue()
+                        showSaveDialog = true
+                    }
+                ) {
                     Text("End")
                 }
 

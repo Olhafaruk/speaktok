@@ -23,6 +23,9 @@ class DialogueViewModel(
 
     private var lastAgentLine: DialogueLine? = null
 
+    private val _messages = mutableListOf<DialogueLine>()
+    val messages: List<DialogueLine> get() = _messages
+
     init {
         startDialogue()
     }
@@ -78,6 +81,14 @@ class DialogueViewModel(
                     learningLanguageCode
                 )
 
+                _messages.add(
+                    DialogueLine(
+                        speaker = com.example.dialogtrainer.data.model.dialogue.Speaker.USER,
+                        text = answer,
+                        translation = null
+                    )
+                )
+
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     feedback = feedback
@@ -116,6 +127,8 @@ class DialogueViewModel(
                     )
                 } else {
                     lastAgentLine = nextLine
+                    _messages.add(nextLine)
+
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         currentLine = nextLine,
@@ -123,6 +136,7 @@ class DialogueViewModel(
                         feedback = null
                     )
                 }
+
 
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(

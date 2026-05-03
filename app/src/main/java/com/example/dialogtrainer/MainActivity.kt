@@ -23,8 +23,9 @@ import com.example.dialogtrainer.ui.screens.*
 import com.example.dialogtrainer.ui.screens.dialogue_history.DialogueHistoryScreen
 import com.example.dialogtrainer.ui.screens.dialogue_history.DialogueHistoryViewModel
 import com.example.dialogtrainer.ui.screens.dialogue_history.DialogueHistoryViewModelFactory
-import com.example.dialogtrainer.ui.screens.dialogue_list.DialogueListScreen
-import com.example.dialogtrainer.ui.screens.dialogue_list.DialogueListViewModel
+import com.example.dialogtrainer.ui.screens.dialogue_history.HistoryListScreen
+import com.example.dialogtrainer.ui.screens.dialogue_history.HistoryListViewModel
+import com.example.dialogtrainer.ui.screens.dialogue_history.HistoryListViewModelFactory
 import com.example.dialogtrainer.ui.theme.DialogTrainerTheme
 
 class MainActivity : ComponentActivity() {
@@ -57,20 +58,18 @@ fun DialogTrainerNavHost() {
         }
 
 
-        // DIALOGUE LIST SCREEN
+        // HISTORY LIST SCREEN
         composable("dialogues") {
-            val viewModel: DialogueListViewModel = viewModel(
-                factory = DialogueListViewModel.Factory(AppDependencies.dialogueHistoryRepository)
-
+            val viewModel: HistoryListViewModel = viewModel(
+                factory = HistoryListViewModelFactory(AppDependencies.dialogueHistoryRepository)
             )
 
-            DialogueListScreen(
+
+            HistoryListScreen(
                 viewModel = viewModel,
+                onBack = { navController.popBackStack() },
                 onOpenDialogue = { id ->
                     navController.navigate("dialogue_history/$id")
-                },
-                onStartNewDialogue = {
-                    navController.navigate("dialogue_new")
                 }
             )
         }
