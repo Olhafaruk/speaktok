@@ -54,5 +54,19 @@ class DialogueRepository(
     suspend fun listModels(): String {
         return aiProvider.listModels()
     }
-}
 
+
+    suspend fun generateTitle(messages: List<DialogueLine>): String {
+        val text = messages.joinToString("\n") { "${it.speaker}: ${it.text}" }
+
+        val prompt = """
+            Analyze the dialogue below and generate a short title (2–3 words) describing the topic.
+            Title must be in English.
+            
+            Dialogue:
+            $text
+        """.trimIndent()
+
+        return aiProvider.generateTitle(prompt).trim()
+    }
+}

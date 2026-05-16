@@ -28,4 +28,6 @@ interface AiDialogueProvider {
     ): DialogueLine?
 
     suspend fun listModels(): String
+
+    suspend fun generateTitle(prompt: String): String
 }

@@ -220,4 +220,14 @@ No markdown. No explanations. No extra text.
 
         response
     }
+
+    // ---------------------------------------------------------
+    // 4) GENERATE TITLE (NEW)
+    // ---------------------------------------------------------
+    override suspend fun generateTitle(prompt: String): String = withContext(Dispatchers.IO) {
+        val text = callGemini(prompt).trim()
+
+        text.lineSequence().firstOrNull()?.trim().orEmpty()
+    }
+
 }

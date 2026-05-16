@@ -1,6 +1,7 @@
 // ui/screens/dialogue_history/HistoryListScreen.kt
 package com.example.dialogtrainer.ui.screens.dialogue_history
 
+import android.widget.Button
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.dialogtrainer.data.repository.history.SavedDialogue
@@ -35,13 +37,24 @@ fun HistoryListScreen(
         }
     ) { padding ->
         if (dialogues.isEmpty()) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding),
-                contentAlignment = androidx.compose.ui.Alignment.Center
+                    .padding(padding)
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                Text("You don't have any saved dialogues yet.")
+              Text(
+                  "You don't have any saved dialogues yet.",
+                  style = MaterialTheme.typography.titleMedium
+              )
+                Spacer(Modifier.height(16.dp))
+
+                Button(onClick = { onOpenDialogue(-1) }) {
+                    Text("Start a new dialogue")
+                }
+
             }
         } else {
             LazyColumn(
@@ -72,10 +85,9 @@ private fun HistoryItem(
         Column(modifier = Modifier.padding(12.dp)) {
             Text(dialogue.title, style = MaterialTheme.typography.titleMedium)
             Spacer(Modifier.height(4.dp))
-            Text(
-                text = "Language: ${dialogue.languageCode}",
-                style = MaterialTheme.typography.bodySmall
-            )
+            Text("Language: ${dialogue.languageCode}", style = MaterialTheme.typography.bodySmall)
+
+
         }
     }
 }

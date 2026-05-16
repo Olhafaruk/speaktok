@@ -19,7 +19,11 @@ import com.example.dialogtrainer.data.repository.UserProfileRepositoryImpl
 import com.example.dialogtrainer.data.repository.userProfileDataStore
 import com.example.dialogtrainer.ui.dialogue.DialogueViewModel
 import com.example.dialogtrainer.ui.dialogue.DialogueViewModelFactory
-import com.example.dialogtrainer.ui.screens.*
+import com.example.dialogtrainer.ui.screens.DialogueScreen
+import com.example.dialogtrainer.ui.screens.MainScreen
+import com.example.dialogtrainer.ui.screens.ProfileScreen
+import com.example.dialogtrainer.ui.screens.ProfileViewModel
+import com.example.dialogtrainer.ui.screens.ProfileViewModelFactory
 import com.example.dialogtrainer.ui.screens.dialogue_history.DialogueHistoryScreen
 import com.example.dialogtrainer.ui.screens.dialogue_history.DialogueHistoryViewModel
 import com.example.dialogtrainer.ui.screens.dialogue_history.DialogueHistoryViewModelFactory
@@ -57,19 +61,21 @@ fun DialogTrainerNavHost() {
             )
         }
 
-
         // HISTORY LIST SCREEN
         composable("dialogues") {
             val viewModel: HistoryListViewModel = viewModel(
                 factory = HistoryListViewModelFactory(AppDependencies.dialogueHistoryRepository)
             )
 
-
             HistoryListScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack() },
                 onOpenDialogue = { id ->
-                    navController.navigate("dialogue_history/$id")
+                    if (id == -1L) {
+                        navController.navigate("dialogue_new")
+                    } else {
+                        navController.navigate("dialogue_history/$id")
+                    }
                 }
             )
         }
