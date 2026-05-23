@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.example.dialogtrainer.data.model.dialogue.Speaker
 
 class DialogueViewModel(
     private val repository: DialogueRepository,
@@ -42,6 +43,8 @@ class DialogueViewModel(
                 )
 
                 lastAgentLine = firstLine
+
+                _messages.add(firstLine)
 
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -78,12 +81,12 @@ class DialogueViewModel(
                     sceneId ?: "",
                     agentLine,
                     answer,
-                    learningLanguageCode
+                    nativeLanguageCode
                 )
 
                 _messages.add(
                     DialogueLine(
-                        speaker = com.example.dialogtrainer.data.model.dialogue.Speaker.USER,
+                        speaker = Speaker.USER,
                         text = answer,
                         translation = null
                     )

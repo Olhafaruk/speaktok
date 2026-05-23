@@ -6,6 +6,8 @@ import com.example.dialogtrainer.data.local.room.DialogueEntity
 import com.example.dialogtrainer.data.local.room.DialogueMessageEntity
 import com.example.dialogtrainer.data.model.dialogue.DialogueLine
 import com.example.dialogtrainer.data.model.dialogue.Speaker
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class DialogueHistoryRepositoryImpl(
     private val dao: DialogueDao
@@ -43,16 +45,20 @@ class DialogueHistoryRepositoryImpl(
         return dialogueId
     }
 
-    override suspend fun getAllDialogues(): List<SavedDialogue> =
-        dao.getAllDialogues().map {
-            SavedDialogue(
-                id = it.id,
-                title = it.title,
-                createdAt = it.createdAt,
-                updatedAt = it.updatedAt,
-                languageCode = it.languageCode
-            )
+    override fun getAllDialogues(): Flow<List<SavedDialogue>> =
+        dao.getAllDialogues().map { list ->
+            list.map {
+                SavedDialogue(
+                    id = it.id,
+                    title = it.title,
+                    createdAt = it.createdAt,
+                    updatedAt = it.updatedAt,
+                    languageCode = it.languageCode
+                )
+            }
         }
+
+
 
     override suspend fun getDialogueMessages(dialogueId: Long): List<DialogueLine> =
         dao.getMessages(dialogueId).map {

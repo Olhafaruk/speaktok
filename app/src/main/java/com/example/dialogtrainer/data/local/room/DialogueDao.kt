@@ -2,6 +2,7 @@
 package com.example.dialogtrainer.data.local.room
 
 import androidx.room.*
+import kotlinx.coroutines.flow.Flow
 
 /**
  * DAO for accessing dialogues and messages.
@@ -16,7 +17,7 @@ interface DialogueDao {
     suspend fun insertMessages(messages: List<DialogueMessageEntity>)
 
     @Query("SELECT * FROM dialogues ORDER BY createdAt DESC")
-    suspend fun getAllDialogues(): List<DialogueEntity>
+    fun getAllDialogues(): Flow<List<DialogueEntity>>
 
     @Query("SELECT * FROM dialogue_messages WHERE dialogueId = :dialogueId ORDER BY orderIndex ASC")
     suspend fun getMessages(dialogueId: Long): List<DialogueMessageEntity>

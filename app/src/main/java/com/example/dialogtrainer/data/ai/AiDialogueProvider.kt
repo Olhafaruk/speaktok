@@ -16,7 +16,7 @@ interface AiDialogueProvider {
         sceneId: String,
         previousLine: DialogueLine,
         userAnswer: String,
-        learningLanguageCode: String
+        nativeLanguageCode: String
     ): Feedback
 
     suspend fun generateNextLine(

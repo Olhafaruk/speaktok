@@ -64,7 +64,7 @@ Respond ONLY with the two lines.
         sceneId: String,
         previousLine: DialogueLine,
         userAnswer: String,
-        learningLanguageCode: String
+        nativeLanguageCode: String
     ): Feedback = withContext(Dispatchers.IO) {
 
         val prompt = """
@@ -74,14 +74,12 @@ RULES:
 - Return ONLY valid JSON.
 - No markdown.
 - No code fences.
-- No explanations.
-- No comments.
-- No translation.
-- No text before or after JSON.
+- No explanations outside JSON.
 - JSON MUST start with '{' and end with '}'.
 
 TASK:
-Evaluate the user's answer in the target language ($learningLanguageCode).
+Evaluate the user's answer.
+Write the "comment" field in the user's NATIVE language: $nativeLanguageCode.
 
 Return EXACTLY this JSON:
 

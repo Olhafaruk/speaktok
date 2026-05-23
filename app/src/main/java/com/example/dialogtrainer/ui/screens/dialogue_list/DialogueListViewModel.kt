@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.dialogtrainer.data.repository.history.DialogueHistoryRepository
 import com.example.dialogtrainer.data.repository.history.SavedDialogue
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DialogueListViewModel(
@@ -15,17 +17,14 @@ class DialogueListViewModel(
 ) : ViewModel() {
 
     private val _dialogues = MutableStateFlow<List<SavedDialogue>>(emptyList())
-    val dialogues: StateFlow<List<SavedDialogue>> = _dialogues
 
-    init {
-        loadDialogues()
-    }
-
-    private fun loadDialogues() {
-        viewModelScope.launch {
-            _dialogues.value = repository.getAllDialogues()
-        }
-    }
+    val dialogues: StateFlow<List<SavedDialogue>> =
+        repository.getAllDialogues()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000),
+                emptyList()
+            )
 
     class Factory(
         private val repository: DialogueHistoryRepository

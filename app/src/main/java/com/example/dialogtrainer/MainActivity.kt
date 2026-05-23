@@ -136,6 +136,8 @@ fun DialogTrainerNavHost() {
                 DialogueScreen(
                     viewModel = viewModel,
                     sceneTitle = "New dialogue",
+                    nativeLang = nativeLang,
+                    learningLang = learningLang,
                     onEnd = {
                         navController.popBackStack("main", false)
                     }

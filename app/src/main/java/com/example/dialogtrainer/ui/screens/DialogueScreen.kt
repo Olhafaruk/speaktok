@@ -16,6 +16,8 @@ import kotlinx.coroutines.launch
 fun DialogueScreen(
     viewModel: DialogueViewModel,
     sceneTitle: String,
+    nativeLang: String,
+    learningLang: String,
     onEnd: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
@@ -49,7 +51,7 @@ fun DialogueScreen(
                                     title = title,
                                     createdAt = now,
                                     updatedAt = now,
-                                    languageCode = "en",
+                                    languageCode = learningLang,
                                     messages = messages
                                 )
                             }

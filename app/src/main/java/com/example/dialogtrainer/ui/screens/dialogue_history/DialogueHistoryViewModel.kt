@@ -9,6 +9,7 @@ import com.example.dialogtrainer.data.repository.history.DialogueHistoryReposito
 import com.example.dialogtrainer.data.repository.history.SavedDialogue
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class DialogueHistoryViewModel(
@@ -28,7 +29,7 @@ class DialogueHistoryViewModel(
 
     private fun load() {
         viewModelScope.launch {
-            val all = repository.getAllDialogues()
+            val all = repository.getAllDialogues().first()
             val dlg = all.find { it.id == dialogueId }
 
             _dialogue.value = dlg

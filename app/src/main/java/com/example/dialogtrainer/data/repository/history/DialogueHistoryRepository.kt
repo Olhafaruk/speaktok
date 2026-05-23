@@ -2,6 +2,7 @@
 package com.example.dialogtrainer.data.repository.history
 
 import com.example.dialogtrainer.data.model.dialogue.DialogueLine
+import kotlinx.coroutines.flow.Flow
 
 interface DialogueHistoryRepository {
 
@@ -13,7 +14,7 @@ interface DialogueHistoryRepository {
         messages: List<DialogueLine>
     ): Long
 
-    suspend fun getAllDialogues(): List<SavedDialogue>
+    fun getAllDialogues(): Flow<List<SavedDialogue>>
 
     suspend fun getDialogueMessages(dialogueId: Long): List<DialogueLine>
 
