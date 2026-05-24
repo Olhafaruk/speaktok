@@ -18,22 +18,22 @@
 # 📸 Screenshots
 
 ### 🏠 1. Home Screen
-<img src="screenshots/home.png" width="320"/>
+<img src="screenshots/home.jpg" width="320"/>
 
 ### 💬 2. New Dialogue — First AI Message
-<img src="screenshots/new_dialogue_start.png" width="320"/>
+<img src="screenshots/new_dialogue_start.jpg" width="320"/>
 
 ### ✍️ 3. New Dialogue — User Answer + AI Feedback
-<img src="screenshots/new_dialogue_feedback.png" width="320"/>
+<img src="screenshots/new_dialogue_feedback.jpg" width="320"/>
 
 ### 💾 4. Save Dialogue Prompt
-<img src="screenshots/save_dialogue_prompt.png" width="320"/>
+<img src="screenshots/save_dialogue_prompt.jpg" width="320"/>
 
 ### 📚 5. History — Saved Dialogues List
-<img src="screenshots/history_list.png" width="320"/>
+<img src="screenshots/history_list.jpg" width="320"/>
 
 ### 📖 6. Saved Dialogue — Full Conversation View
-<img src="screenshots/saved_dialogue_view.png" width="320"/>
+<img src="screenshots/saved_dialogue_view.jpg" width="320"/>
 
 ---
 
@@ -77,9 +77,7 @@ Add it to your project:
 GEMINI_API_KEY=your_key_here
 
 
----
-
-# 🇬🇧 English
+--
 
 ### Overview
 **DialogTrainer** is a mobile app designed to help learners practice real-life foreign languages through interactive dialogs, scenes, and role-based conversations.  
